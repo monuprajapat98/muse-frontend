@@ -1,5 +1,3 @@
-
-
 "use client"
 import Loader from '@/app/components/loaders/loader';
 import { RedocStandalone } from 'redoc';
@@ -51,20 +49,3 @@ const APIDocs = () => {
 };
 
 export default APIDocs;
-
-
-
-
-
-// "use client"
-// import { RedocStandalone } from 'redoc';
-// const APIDocs = () => {
-//     return (
-//         <div>
-//             <RedocStandalone
-//                 specUrl="/openapi.json"
-//             />
-//         </div>
-//     );
-// };
-// export default APIDocs;
