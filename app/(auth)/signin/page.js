@@ -3,9 +3,11 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { Button, Input } from "@nextui-org/react";
 import axios from 'axios';
+import { useAuth } from '@/context/AuthContext';
 
 export default function SignIn() {
     const router = useRouter();
+    const { login } = useAuth();
 
     const [formData, setFormData] = useState({
         email: '',
@@ -59,8 +61,12 @@ export default function SignIn() {
 
         try {
             const response = await axios.post('http://localhost:8088/auth/login', formData);
-            console.log(response.data);
+            const data = await response?.data;
+            const accessToken = data?.tokens?.AccessToken; 
+            login(accessToken);
+            console.log(response)
             router.push('/home');
+
         } catch (error) {
             console.error('Error during login:', error);
             setErrors({ email: '', password: 'Invalid email or password. Please try again.' }); // Show error for password

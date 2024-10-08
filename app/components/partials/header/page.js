@@ -5,18 +5,17 @@ import Image from "next/image";
 import MuseLogo from "../../../../public/image/muse-logo.svg";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-
 import { FaBarsStaggered } from "react-icons/fa6";
 import { MainMenu } from "@/app/_lib/constants";
 import { Button } from "@nextui-org/react";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Avatar, User } from "@nextui-org/react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, User } from "@nextui-org/react";
+import { useAuth } from "@/context/AuthContext";
 
 const Header = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter()
-
   const pathname = usePathname();
-
+  const { token, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -56,19 +55,7 @@ const Header = () => {
 
         <div className={`hidden lg:flex lg:items-center lg:w-auto flex-grow`}>
           <div className="text-sm lg:flex-grow text-end">
-            {/* {MainMenu &&
-              MainMenu.map((item, index) => {
-                return (
-                  <Link
-                    href={item.url}
-                    key={index}
-                    className={`${pathname === item.url ? "active-link text-[#1495ea]" : ""
-                      } block md:inline-block relative md:mt-0 text-secondary hover:text-[#1495ea] px-4 py-3`}
-                  >
-                    {item.name}
-                  </Link>
-                );
-              })} */}
+
             {MainMenu &&
               MainMenu.map((item, index) => {
                 return (
@@ -83,7 +70,7 @@ const Header = () => {
                 );
               })}
 
-            <Button color="primary" onClick={() => router.push('/signin')} className=" mr-4 hover:bg-blue border-blue border-[1px] rounded-lg text-grey hover:text-white hover:!opacity-100">
+            {/* <Button color="primary" onClick={() => router.push('/signin')} className=" mr-4 hover:bg-blue border-blue border-[1px] rounded-lg text-grey hover:text-white hover:!opacity-100">
               Login
             </Button>
 
@@ -107,7 +94,47 @@ const Header = () => {
                   Log Out
                 </DropdownItem>
               </DropdownMenu>
-            </Dropdown>
+            </Dropdown> */}
+            {token ? (
+              // Render the Profile dropdown if the user is logged in (token is available)
+              <Dropdown className="profileDropdown">
+                <DropdownTrigger>
+                  <User
+                    as="button"
+                    avatarProps={{
+                      isBordered: true,
+                      src: "https://i.pravatar.cc/150?u=a042581f4e29026024d", // Example avatar
+                    }}
+                    className="transition-transform profileDropdown"
+                    name="Tony Reichert" // You can update this dynamically if you have user info
+                  />
+                </DropdownTrigger>
+                <DropdownMenu aria-label="User Actions" variant="flat">
+                  <DropdownItem key="settings" onClick={() => router.push('/profile')}>
+                    My Profile
+                  </DropdownItem>
+                  <DropdownItem
+                    key="logout"
+                    onClick={() => {
+                      logout(); // Log the user out by clearing the token
+                      router.push('/signin'); // Redirect to sign-in page
+                    }}
+                    color="danger"
+                  >
+                    Log Out
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            ) : (
+              // Render the Login button if the user is not logged in (no token)
+              <Button
+                color="primary"
+                onClick={() => router.push('/signin')}
+                className="mr-4 hover:bg-blue border-blue border-[1px] rounded-lg text-grey hover:text-white hover:!opacity-100"
+              >
+                Login
+              </Button>
+            )}
           </div>
         </div>
       </div>
