@@ -1,0 +1,37 @@
+.inputField {
+    .is-filled {
+        color: #2a3547;
+    }
+}
+.inputField {
+    input {
+        &::placeholder {
+            color: #2a3547;
+        }
+    }
+}
+.profileDropdown {
+    transform: translateY(13px);
+    &[aria-expanded="true"] {
+        transform: translateY(13px);
+    }
+    .text-inherit {
+        color: #313c47;
+    }
+    [aria-label="User Actions"] {
+        li {
+            span {
+                color: #313c47;
+            }
+        }
+    }
+}
+.inputFieldOtp {
+    div {
+        justify-content: space-between;
+        input {
+            background-color: #e6f1fe;
+            font-size: 16px;
+        }
+    }
+}

@@ -1,0 +1,564 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Muse Public APIs",
+        "version": "1.1.2"
+    },
+    "paths": {
+        "/health": {
+            "get": {
+                "tags": [
+                    "Healthcheck"
+                ],
+                "summary": "Perform a Health Check",
+                "operationId": "health_health_get",
+                "responses": {
+                    "200": {
+                        "description": "Return HTTP Status Code 200 (OK)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HealthCheck"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/clients/credentials": {
+            "post": {
+                "tags": [
+                    "Authentication & Authorization"
+                ],
+                "summary": "Create API Client Credentials",
+                "description": "Generates a new set of client ID and secret for API access. Client credentials are emailed and returned in the response.",
+                "operationId": "create_api_key_auth_clients_credentials_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ClientCredentialsRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ClientCredentialsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/token": {
+            "post": {
+                "tags": [
+                    "Authentication & Authorization"
+                ],
+                "summary": "Get Access Token",
+                "description": "Issues an access token for authenticated clients using client ID and secret.",
+                "operationId": "get_access_token_auth_token_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AccessTokenRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AccessTokenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/tokens/validate": {
+            "post": {
+                "tags": [
+                    "Authentication & Authorization"
+                ],
+                "summary": "Validate JWT Token",
+                "description": "Validates a provided JWT access token and returns its validity and associated subject (client_id).",
+                "operationId": "validate_token_auth_tokens_validate_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TokenValidationRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "sub": {
+                                            "type": "string",
+                                            "example": "a7473220c109d652183674461c4d111d",
+                                            "description": "Subject (Client ID)"
+                                        },
+                                        "exp": {
+                                            "type": "integer",
+                                            "example": 1728302030,
+                                            "description": "Expiration Time (in Unix timestamp)"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication & Authorization"
+                ],
+                "summary": "Register a new user",
+                "description": "Registers a new user in AWS Cognito with the provided email and password. The user must verify their email address.",
+                "operationId": "register_auth_register_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterUser"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User registered successfully! An OTP has been sent to your email for verification."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/verify-email": {
+            "post": {
+                "tags": [
+                    "Authentication & Authorization"
+                ],
+                "summary": "Verify user's email",
+                "description": "Verifies the confirmation code sent to the user's email during the registration process in AWS Cognito.",
+                "operationId": "verify_email_auth_verify_email_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VerifyEmail"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Email verified successfully!"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication & Authorization"
+                ],
+                "summary": "User login",
+                "description": "Logs in a user with the provided email and password using AWS Cognito.",
+                "operationId": "login_auth_login_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginUser"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AccessTokenRequest": {
+                "properties": {
+                    "client_id": {
+                        "type": "string",
+                        "title": "Client Id"
+                    },
+                    "client_secret": {
+                        "type": "string",
+                        "title": "Client Secret"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "client_id",
+                    "client_secret"
+                ],
+                "title": "AccessTokenRequest"
+            },
+            "AccessTokenResponse": {
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "title": "Access Token"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "access_token"
+                ],
+                "title": "AccessTokenResponse"
+            },
+            "ClientCredentialsRequest": {
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    },
+                    "auth": {
+                        "type": "string",
+                        "title": "Auth"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email",
+                    "auth"
+                ],
+                "title": "ClientCredentialsRequest"
+            },
+            "ClientCredentialsResponse": {
+                "properties": {
+                    "client_id": {
+                        "type": "string",
+                        "title": "Client Id"
+                    },
+                    "client_secret": {
+                        "type": "string",
+                        "title": "Client Secret"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "client_id",
+                    "client_secret"
+                ],
+                "title": "ClientCredentialsResponse"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "HealthCheck": {
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "title": "Status",
+                        "default": "OK"
+                    }
+                },
+                "type": "object",
+                "title": "HealthCheck",
+                "description": "Response model to validate and return when performing a health check."
+            },
+            "LoginUser": {
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "title": "LoginUser"
+            },
+            "LoginResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "tokens": {
+                        "type": "object",
+                        "properties": {
+                            "AccessToken": {
+                                "type": "string",
+                                "title": "Access Token"
+                            },
+                            "ExpiresIn": {
+                                "type": "integer",
+                                "title": "Token Expiration Time (in seconds)"
+                            },
+                            "TokenType": {
+                                "type": "string",
+                                "title": "Type of Token"
+                            },
+                            "RefreshToken": {
+                                "type": "string",
+                                "title": "Refresh Token"
+                            },
+                            "IdToken": {
+                                "type": "string",
+                                "title": "ID Token"
+                            }
+                        },
+                        "required": [
+                            "AccessToken",
+                            "ExpiresIn",
+                            "TokenType",
+                            "RefreshToken"
+                        ]
+                    }
+                },
+                "required": [
+                    "message",
+                    "tokens"
+                ],
+                "title": "LoginResponse"
+            },
+            "RegisterUser": {
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "title": "Password"
+                    },
+                    "confirm_password": {
+                        "type": "string",
+                        "title": "Confirm Password"
+                    },
+                    "first_name": {
+                        "type": "string",
+                        "title": "First Name"
+                    },
+                    "last_name": {
+                        "type": "string",
+                        "title": "Last Name"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email",
+                    "password",
+                    "confirm_password",
+                    "first_name",
+                    "last_name"
+                ],
+                "title": "RegisterUser"
+            },
+            "TokenValidationRequest": {
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "title": "Access Token"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "access_token"
+                ],
+                "title": "TokenValidationRequest"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            },
+            "VerifyEmail": {
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "title": "Email"
+                    },
+                    "confirmation_code": {
+                        "type": "string",
+                        "title": "Confirmation Code"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "email",
+                    "confirmation_code"
+                ],
+                "title": "VerifyEmail"
+            }
+        }
+    }
+}
